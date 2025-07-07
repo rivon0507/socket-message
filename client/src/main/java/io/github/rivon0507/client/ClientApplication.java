@@ -27,6 +27,7 @@ public class ClientApplication extends Application {
     private Label statusLabel;
 
     private MessageClient client;
+    private Stage primaryStage;
 
     public static void main(String[] args) {
         launch(args);
@@ -34,6 +35,7 @@ public class ClientApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        this.primaryStage = primaryStage;
         primaryStage.setTitle("Message Client");
 
         // Create UI components
@@ -120,6 +122,7 @@ public class ClientApplication extends Application {
         primaryStage.setOnCloseRequest(_ -> {
             if (client != null && client.isConnected()) {
                 client.disconnect("Application closed");
+                primaryStage.setTitle("Message Client");
             }
         });
     }
@@ -147,6 +150,9 @@ public class ClientApplication extends Application {
                 serverField.setDisable(true);
                 portField.setDisable(true);
                 nameField.setDisable(true);
+
+                // Update window title with client name
+                Platform.runLater(() -> primaryStage.setTitle("Message Client - " + clientName));
             }
         } catch (NumberFormatException e) {
             updateStatus("Invalid port number");
@@ -157,6 +163,9 @@ public class ClientApplication extends Application {
         if (client != null) {
             client.disconnect("User disconnected");
             client = null;
+
+            // Reset window title
+            Platform.runLater(() -> primaryStage.setTitle("Message Client"));
         }
 
         // Update UI state
